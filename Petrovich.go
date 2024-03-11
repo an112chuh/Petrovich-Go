@@ -63,10 +63,10 @@ func LoadRules(FileWithRules string) (*Rules, error) {
 }
 
 /*
-	Склонение имени
-	value: Значение для склонения
-	gCase: Падеж для склонения
-	gender: Грамматический род
+Склонение имени
+value: Значение для склонения
+gCase: Падеж для склонения
+gender: Грамматический род
 */
 func (r *Rules) InfFirstname(value string, gCase int, gender string) string {
 
@@ -74,10 +74,10 @@ func (r *Rules) InfFirstname(value string, gCase int, gender string) string {
 }
 
 /*
-	Склонение фамилии
-	value: Значение для склонения
-	gCase: Падеж для склонения
-	gender: Грамматический род
+Склонение фамилии
+value: Значение для склонения
+gCase: Падеж для склонения
+gender: Грамматический род
 */
 func (r *Rules) InfLastname(value string, gCase int, gender string) string {
 
@@ -85,10 +85,10 @@ func (r *Rules) InfLastname(value string, gCase int, gender string) string {
 }
 
 /*
-	Склонение отчества
-	value: Значение для склонения
-	gCase: Падеж для склонения
-	gender: Грамматический род
+Склонение отчества
+value: Значение для склонения
+gCase: Падеж для склонения
+gender: Грамматический род
 */
 func (r *Rules) InfMiddlename(value string, gCase int, gender string) string {
 
@@ -96,10 +96,10 @@ func (r *Rules) InfMiddlename(value string, gCase int, gender string) string {
 }
 
 /*
-	Склонение ФИО
-	value: ФИО через проблеы
-	gCase: Падеж для склонения
-	short: Результат в сокращенной форме "Иванов И.И."
+Склонение ФИО
+value: ФИО через проблеы
+gCase: Падеж для склонения
+short: Результат в сокращенной форме "Иванов И.И."
 */
 func (r *Rules) InfFio(fio string, gCase int, short bool) string {
 	result := ""
@@ -120,6 +120,29 @@ func (r *Rules) InfFio(fio string, gCase int, short bool) string {
 	} else {
 		fioArray[1] = inflect(fioArray[1], r.Firstname, gCase, gender)
 		fioArray[2] = inflect(fioArray[2], r.Middlename, gCase, gender)
+		result = strings.Join(fioArray, " ")
+	}
+	return result
+}
+
+func (r *Rules) InfFi(fi string, gCase int, short bool) string {
+	result := ""
+	fi = strings.Trim(fi, " ")
+
+	fioArray := strings.Split(fi, " ")
+	if len(fioArray) != 2 {
+		fmt.Println("Error format of fio [Lastname FirstName MiddleName]")
+		return result
+	}
+
+	gender := "androgynous"
+
+	fioArray[0] = inflect(fioArray[0], r.Lastname, gCase, gender)
+
+	if short {
+		result = fmt.Sprintf("%s %s.%s.", fioArray[0], string([]rune(fioArray[1])[:1]))
+	} else {
+		fioArray[1] = inflect(fioArray[1], r.Firstname, gCase, gender)
 		result = strings.Join(fioArray, " ")
 	}
 	return result
