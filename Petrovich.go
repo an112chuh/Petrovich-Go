@@ -130,8 +130,10 @@ func (r *Rules) InfFi(fi string, gCase int, short bool) string {
 	fi = strings.Trim(fi, " ")
 
 	fioArray := strings.Split(fi, " ")
+
+	fioArray = deleteEmpty(fioArray)
 	if len(fioArray) != 2 {
-		fmt.Println("Error format of fio [Lastname FirstName MiddleName]")
+		fmt.Println("Error format of fio [Lastname FirstName]")
 		return result
 	}
 
@@ -223,3 +225,12 @@ func findRules(name string, rGroup RulesGroup, gCase int, gender string) string 
 	return name
 }
 
+func deleteEmpty(src []string) []string {
+	var dst []string
+	for _, str := range src {
+		if str != "" {
+			dst = append(dst, str)
+		}
+	}
+	return dst
+}
