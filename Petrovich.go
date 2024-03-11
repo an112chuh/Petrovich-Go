@@ -8,18 +8,18 @@ import (
 	"strings"
 )
 
-type rules struct {
-	Lastname   rulesGroup `json:"lastname"`
-	Firstname  rulesGroup `json:"firstname"`
-	Middlename rulesGroup `json:"middlename"`
+type Rules struct {
+	Lastname   RulesGroup `json:"lastname"`
+	Firstname  RulesGroup `json:"firstname"`
+	Middlename RulesGroup `json:"middlename"`
 }
 
-type rulesGroup struct {
-	Exceptions []rule `json:"exceptions"`
-	Suffixes   []rule `json:"suffixes"`
+type RulesGroup struct {
+	Exceptions []Rule `json:"exceptions"`
+	Suffixes   []Rule `json:"suffixes"`
 }
 
-type rule struct {
+type Rule struct {
 	Gender string   `json:"gender"`
 	Test   []string `json:"test"`
 	Mods   []string `json:"mods"`
@@ -40,7 +40,7 @@ const (
 	Prepositional
 )
 
-func LoadRules(FileWithRules string) (*rules, error) {
+func LoadRules(FileWithRules string) (*Rules, error) {
 
 	rulesFile, err := os.Open(FileWithRules)
 	if err != nil {
@@ -52,7 +52,7 @@ func LoadRules(FileWithRules string) (*rules, error) {
 	}
 	defer rulesFile.Close()
 
-	var r rules
+	var r Rules
 
 	err = json.Unmarshal([]byte(rulesData), &r)
 	if err != nil {
@@ -68,7 +68,7 @@ func LoadRules(FileWithRules string) (*rules, error) {
 	gCase: Падеж для склонения
 	gender: Грамматический род
 */
-func (r *rules) InfFirstname(value string, gCase int, gender string) string {
+func (r *Rules) InfFirstname(value string, gCase int, gender string) string {
 
 	return inflect(value, r.Firstname, gCase, gender)
 }
@@ -79,7 +79,7 @@ func (r *rules) InfFirstname(value string, gCase int, gender string) string {
 	gCase: Падеж для склонения
 	gender: Грамматический род
 */
-func (r *rules) InfLastname(value string, gCase int, gender string) string {
+func (r *Rules) InfLastname(value string, gCase int, gender string) string {
 
 	return inflect(value, r.Lastname, gCase, gender)
 }
@@ -90,7 +90,7 @@ func (r *rules) InfLastname(value string, gCase int, gender string) string {
 	gCase: Падеж для склонения
 	gender: Грамматический род
 */
-func (r *rules) InfMiddlename(value string, gCase int, gender string) string {
+func (r *Rules) InfMiddlename(value string, gCase int, gender string) string {
 
 	return inflect(value, r.Middlename, gCase, gender)
 }
@@ -101,7 +101,7 @@ func (r *rules) InfMiddlename(value string, gCase int, gender string) string {
 	gCase: Падеж для склонения
 	short: Результат в сокращенной форме "Иванов И.И."
 */
-func (r *rules) InfFio(fio string, gCase int, short bool) string {
+func (r *Rules) InfFio(fio string, gCase int, short bool) string {
 	result := ""
 	fio = strings.Trim(fio, " ")
 
@@ -135,7 +135,7 @@ func detectGender(middlename string) string {
 	return "androgynous"
 }
 
-func inflect(value string, nameFormRules rulesGroup, gCase int, gender string) string {
+func inflect(value string, nameFormRules RulesGroup, gCase int, gender string) string {
 
 	if result := checkExcludes(value, nameFormRules, gCase, gender); result != "" {
 		return result
@@ -153,7 +153,7 @@ func inflect(value string, nameFormRules rulesGroup, gCase int, gender string) s
 	return findRules(value, nameFormRules, gCase, gender)
 }
 
-func checkExcludes(name string, rGroup rulesGroup, gCase int, gender string) string {
+func checkExcludes(name string, rGroup RulesGroup, gCase int, gender string) string {
 	lowerName := strings.ToLower(name)
 
 	for _, exception := range rGroup.Exceptions {
@@ -178,7 +178,7 @@ func applyRule(mod string, name string) string {
 	return result
 }
 
-func findRules(name string, rGroup rulesGroup, gCase int, gender string) string {
+func findRules(name string, rGroup RulesGroup, gCase int, gender string) string {
 
 	for _, suffix := range rGroup.Suffixes {
 		if gender == suffix.Gender || suffix.Gender == "androgynous" {
@@ -199,3 +199,4 @@ func findRules(name string, rGroup rulesGroup, gCase int, gender string) string 
 	}
 	return name
 }
+
