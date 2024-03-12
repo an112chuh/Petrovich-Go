@@ -1,7 +1,10 @@
+// МОДИФИЦИРОВАННАЯ ВЕРСИЯ ПАКЕТА
+
 package Petrovich
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -101,14 +104,16 @@ value: ФИО через проблеы
 gCase: Падеж для склонения
 short: Результат в сокращенной форме "Иванов И.И."
 */
-func (r *Rules) InfFio(fio string, gCase int, short bool) string {
+func (r *Rules) InfFio(fio string, gCase int, short bool) (string, error) {
 	result := ""
 	fio = strings.Trim(fio, " ")
 
 	fioArray := strings.Split(fio, " ")
 	if len(fioArray) != 3 {
-		fmt.Println("Error format of fio [Lastname FirstName MiddleName]")
-		return result
+		if gCase == 0 {
+			fmt.Println("Error format of fio [Lastname FirstName MiddleName], trying InfFi")
+		}
+		return result, errors.New("Error format of fio [Lastname FirstName MiddleName]")
 	}
 
 	gender := detectGender(fioArray[2])
@@ -122,7 +127,7 @@ func (r *Rules) InfFio(fio string, gCase int, short bool) string {
 		fioArray[2] = inflect(fioArray[2], r.Middlename, gCase, gender)
 		result = strings.Join(fioArray, " ")
 	}
-	return result
+	return result, nil
 }
 
 func (r *Rules) InfFi(fi string, gCase int, short bool) string {
